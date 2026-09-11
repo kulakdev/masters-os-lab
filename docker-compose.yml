@@ -1,0 +1,8 @@
+services:
+  bench:
+    build: .
+    volumes:
+      - .:/app
+      - ./results:/app/results
+    working_dir: /app
+    command: bash -c "cmake -B build-docker -DCMAKE_BUILD_TYPE=Release && cmake --build build-docker -j && bash"
