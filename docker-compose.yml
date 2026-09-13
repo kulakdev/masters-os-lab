@@ -4,5 +4,9 @@ services:
     volumes:
       - .:/app
       - ./results:/app/results
+      - /app/build
+      - /app/cmake-build-debug-socket-dev
     working_dir: /app
+    ports:
+      - "3490:3490"
     command: bash -c "cmake -B build-docker -DCMAKE_BUILD_TYPE=Release && cmake --build build-docker -j && bash"

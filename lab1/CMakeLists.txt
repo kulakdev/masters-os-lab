@@ -6,4 +6,4 @@ else()
     set(IOMUX_SRC ../shared/iomux_poll.c)
 endif()
 
-add_executable(socket_benchmark src/main.c ${IOMUX_SRC})
+add_executable(socket_benchmark src/main.c src/common.c src/server.c src/client.c ${IOMUX_SRC})

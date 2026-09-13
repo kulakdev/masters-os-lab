@@ -1,0 +1,8 @@
+build/
+build-docker/
+cmake-build-*/
+results/
+.idea/
+.venv/
+.git/
+.junie/

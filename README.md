@@ -34,6 +34,11 @@ Three research-oriented labs in C11, each producing working demo programs and a 
 
 ## Prerequisites
 
+### Docker (any platform)
+- **Docker Desktop** (macOS, Windows) or **Docker Engine** (Linux) or **Colima**(macOS, my personal choice)
+- **Docker Compose v2** (bundled with Docker Desktop; on Linux: `sudo apt install docker-compose-plugin`)
+
+
 ### macOS (native build)
 - Xcode Command Line Tools: `xcode-select --install`
 - That's it — ships with AppleClang, `make`, and all POSIX headers needed.
@@ -55,10 +60,6 @@ sudo pacman -S gcc cmake make python3
   No native build (POSIX sockets and IPC APIs are unavailable outside WSL/Cygwin).
 - WSL2 with Ubuntu is an alternative: follow the Linux instructions inside WSL.
 
-### Docker (any platform)
-- **Docker Desktop** (macOS, Windows) or **Docker Engine** (Linux)
-- **Docker Compose v2** (bundled with Docker Desktop; on Linux: `sudo apt install docker-compose-plugin`)
-
 ## Building & Running
 
 ### Option A: Native (macOS or Linux)
@@ -69,7 +70,7 @@ make native
 
 This runs:
 1. `cmake -B build -DCMAKE_BUILD_TYPE=Release` — configures the build
-2. `cmake --build build -j` — compiles all lab targets
+2. `cmake --build build-docker -j` — compiles all lab targets
 3. `./build/lab1/socket_benchmark --all` — runs the lab1 binary
 
 Platform detection happens automatically at configure time:
