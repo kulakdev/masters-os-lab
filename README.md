@@ -2,11 +2,12 @@
 
 Three research-oriented labs in C11, each producing working demo programs and a comparison report.
 
-| Lab | Topic | Status |
-|-----|-------|--------|
-| 1 | Socket performance (UNIX/INET, blocking/async, workloads) | In progress |
+| Lab | Topic | Status  |
+|-----|-------|---------|
+| 1 | Socket performance (UNIX/INET, blocking/async, workloads) | Done *  |
 | 2 | IPC comparative analysis (mmap, shm, files, pipes, queues) | Planned |
 | 3 | Cache behavior & memory optimization (access patterns, race conditions) | Planned |
+> \* - requires a report to be written 
 
 ## Repository Structure
 
@@ -62,24 +63,7 @@ sudo pacman -S gcc cmake make python3
 
 ## Building & Running
 
-### Option A: Native (macOS or Linux)
-
-```bash
-make native
-```
-
-This runs:
-1. `cmake -B build -DCMAKE_BUILD_TYPE=Release` — configures the build
-2. `cmake --build build-docker -j` — compiles all lab targets
-3. `./build/lab1/socket_benchmark --all` — runs the lab1 binary
-
-Platform detection happens automatically at configure time:
-- **macOS:** CMake finds `kqueue` → compiles `iomux_kqueue.c`
-- **Linux:** CMake finds `epoll` → compiles `iomux_epoll.c`
-
----
-
-### Option B: Docker (recommended for reproducible benchmarks)
+### Option A: Docker (recommended for reproducible benchmarks)
 
 #### CLI
 Build the container and drop into an interactive shell:
@@ -96,13 +80,32 @@ cmake --build build -j
 ./build-docker/lab1/socket_benchmark --all
 ```
 
+---
+
 #### Python Script
-Run the full automated benchmark matrix (requires `lab1/scripts/run_benchmarks.py`):
+Run the full automated benchmark matrix (located at `lab1/scripts/run_benchmarks.py`):
 ```bash
 make bench
 ```
 
 Results land in `./results/` on your host filesystem.
+
+---
+
+### Option B: Native (macOS or Linux)
+
+```bash
+make native
+```
+
+This runs:
+1. `cmake -B build -DCMAKE_BUILD_TYPE=Release` — configures the build
+2. `cmake --build build-docker -j` — compiles all lab targets
+3. `./build/lab1/socket_benchmark --all` — runs the lab1 binary
+
+Platform detection happens automatically at configure time:
+- **macOS:** CMake finds `kqueue` → compiles `iomux_kqueue.c`
+- **Linux:** CMake finds `epoll` → compiles `iomux_epoll.c`
 
 ---
 
