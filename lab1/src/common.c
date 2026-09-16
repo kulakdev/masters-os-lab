@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 // Function helper to bootstrap an address based on the domain
@@ -46,10 +47,16 @@ int make_listen_socket(const config_t *cfg) {
     int one = 1;
     setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof one);
 
+    if (cfg->domain == DOMAIN_UNIX) {
+        int sz = 256 * 1024;
+        setsockopt(fd, SOL_SOCKET, SO_SNDBUF, &sz, sizeof sz);
+        setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &sz, sizeof sz);
+    }
+
     if (cfg->domain == DOMAIN_UNIX) unlink(cfg->unix_path); /* stale socket file */
 
     if (bind(fd, (struct sockaddr *)&ss, len) < 0) { perror("bind"); return -1;}
-    if (listen(fd, 16) < 0)                      { perror("listen"); return -1;}
+    if (listen(fd, SOMAXCONN) < 0)                 { perror("listen"); return -1;}
     return fd;
 }
 
@@ -65,8 +72,19 @@ int make_connect_socket(const config_t *cfg) {
         setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof one);
     }
 
-    if (connect(fd, (struct sockaddr *)&ss, len) < 0) { perror("connect"); close(fd); return -1; }
-    return fd;
+    for (;;) {
+        if (connect(fd, (struct sockaddr *)&ss, len) == 0) return fd;
+
+        /* On macOS/BSD a full listen backlog makes connect() return
+         * ECONNREFUSED (Linux blocks instead). Retry transient errors so
+         * the connection-latency loop can't deadlock against the server. */
+        if (errno == ECONNREFUSED || errno == EAGAIN || errno == EINTR) {
+            struct timespec ts = { 0, 1000 }; /* 1 us backoff */
+            nanosleep(&ts, NULL);
+            continue;
+        }
+        perror("connect"); close(fd); return -1;
+    }
 }
 
 int set_nonblocking(int fd) {
@@ -95,7 +113,7 @@ ssize_t recv_all(int fd, void *buf, size_t len) {
     while (got < len) {
         ssize_t n = recv(fd, p+got, len-got, 0);
         if (n < 0) {
-            if (errno = EINTR) continue;
+            if (errno == EINTR) continue;
             return -1;
         }
         if (n == 0) break; /*EOF: peer closed early*/
