@@ -2,9 +2,9 @@
 
 Three research-oriented labs in C11, each producing working demo programs and a comparison report.
 
-| Lab | Topic | Status  |
-|-----|-------|---------|
-| 1 | Socket performance (UNIX/INET, blocking/async, workloads) | Done *  |
+| Lab | Topic | Status |
+|-----|-------|-------|
+| 1 | Socket performance (UNIX/INET, blocking/async, workloads) | Done  |
 | 2 | IPC comparative analysis (mmap, shm, files, pipes, queues) | Planned |
 | 3 | Cache behavior & memory optimization (access patterns, race conditions) | Planned |
 > \* - requires a report to be written 
