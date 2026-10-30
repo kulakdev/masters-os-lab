@@ -1,6 +1,6 @@
 BUILD_DIR := build
 
-.PHONY: native docker bench lab2-native lab2-bench clean
+.PHONY: native docker bench lab3 clean
 
 native:                      ## build + run lab1 natively (macOS/Linux)
 	cmake -B $(BUILD_DIR) -DCMAKE_BUILD_TYPE=Release
@@ -13,13 +13,13 @@ docker:                      ## build inside container, drop into shell
 bench:                       ## full benchmark matrix inside container
 	docker compose run --rm bench python3 lab1/scripts/run_benchmarks.py
 
-lab2-native:                 ## build + run the lab2 IPC matrix natively
+lab3:                        ## build + run lab3 cache benchmarks, write results/lab3_results.csv
 	cmake -B $(BUILD_DIR) -DCMAKE_BUILD_TYPE=Release
-	cmake --build $(BUILD_DIR) -j
-	python3 lab2/scripts/run_benchmarks.py
+	cmake --build $(BUILD_DIR) --target cache_benchmark -j
+	python3 lab3/scripts/run_benchmarks.py
 
-lab2-bench:                  ## lab2 IPC matrix inside container (includes mqueue)
-	docker compose run --rm bench python3 lab2/scripts/run_benchmarks.py
+bench3:                      ## full lab3 cache benchmark matrix inside container
+	docker compose run --rm bench python3 lab3/scripts/run_benchmarks.py
 
 clean:
 	rm -rf $(BUILD_DIR)
