@@ -82,6 +82,9 @@ cmake --build build -j
 
 # run lab1
 ./build-docker/lab1/socket_benchmark --all
+
+# run a single lab2 IPC measurement
+./build-docker/lab2/ipc_benchmark -m mmap_file -t throughput -s 4096 -n 50000
 ```
 
 ---
@@ -93,6 +96,13 @@ make bench
 ```
 
 Results land in `./results/` on your host filesystem.
+
+Lab 2 has its own matrix (includes POSIX message queues, Linux-only):
+```bash
+make lab2-bench
+```
+
+Results: `results/lab2_results.csv`; charts: `python3 lab2/scripts/plot_results.py`.
 
 ---
 
@@ -107,9 +117,15 @@ This runs:
 2. `cmake --build build-docker -j` — compiles all lab targets
 3. `./build/lab1/socket_benchmark --all` — runs the lab1 binary
 
+For lab 2 natively (POSIX message queues are skipped on macOS):
+```bash
+make lab2-native
+```
+
 Platform detection happens automatically at configure time:
 - **macOS:** CMake finds `kqueue` → compiles `iomux_kqueue.c`
 - **Linux:** CMake finds `epoll` → compiles `iomux_epoll.c`
+- **Linux only:** CMake finds `mq_open` → enables the `mqueue` IPC method
 
 ---
 
