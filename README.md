@@ -6,7 +6,7 @@ Three research-oriented labs in C11, each producing working demo programs and a 
 |-----|-------|-------|
 | 1 | Socket performance (UNIX/INET, blocking/async, workloads) | Done  |
 | 2 | IPC comparative analysis (mmap, shm, files, pipes, queues) | Planned |
-| 3 | Cache behavior & memory optimization (access patterns, race conditions) | Planned |
+| 3 | Cache behavior & memory optimization (access patterns, race conditions) | Done  |
 > \* - requires a report to be written 
 
 ## Repository Structure
@@ -29,7 +29,11 @@ Three research-oriented labs in C11, each producing working demo programs and a 
 │   ├── scripts/
 │   └── report/
 ├── lab2/                   # Lab 2: IPC (planned)
-├── lab3/                   # Lab 3: Cache (planned)
+├── lab3/                   # Lab 3: Cache & memory benchmarks
+│   ├── CMakeLists.txt
+│   ├── src/                # access patterns, latency, matmul, false sharing, races
+│   ├── scripts/            # benchmark runner -> results/lab3_results.csv
+│   └── report/             # mini-report with comparison tables
 └── results/                # Benchmark output (CSV, generated reports)
 ```
 
@@ -106,6 +110,27 @@ This runs:
 Platform detection happens automatically at configure time:
 - **macOS:** CMake finds `kqueue` → compiles `iomux_kqueue.c`
 - **Linux:** CMake finds `epoll` → compiles `iomux_epoll.c`
+
+---
+
+### Lab 3: Cache & memory benchmarks
+
+```bash
+make lab3   # build + run the suite natively, writes results/lab3_results.csv
+```
+
+Or run individual benchmarks directly:
+```bash
+./build/lab3/cache_benchmark all
+./build/lab3/cache_benchmark stride
+./build/lab3/cache_benchmark latency
+./build/lab3/cache_benchmark matmul
+./build/lab3/cache_benchmark false-sharing
+./build/lab3/cache_benchmark race
+```
+
+Output is CSV on stdout (`benchmark,parameter,value,unit`), with machine info on stderr.
+The analysis lives in [`lab3/report/REPORT.md`](lab3/report/REPORT.md).
 
 ---
 
