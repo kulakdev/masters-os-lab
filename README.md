@@ -5,7 +5,7 @@ Three research-oriented labs in C11, each producing working demo programs and a 
 | Lab | Topic | Status |
 |-----|-------|-------|
 | 1 | Socket performance (UNIX/INET, blocking/async, workloads) | Done  |
-| 2 | IPC comparative analysis (mmap, shm, files, pipes, queues) | Planned |
+| 2 | IPC comparative analysis (mmap, shm, files, pipes, queues) | Done  |
 | 3 | Cache behavior & memory optimization (access patterns, race conditions) | Planned |
 > \* - requires a report to be written 
 
@@ -28,7 +28,12 @@ Three research-oriented labs in C11, each producing working demo programs and a 
 │   ├── src/
 │   ├── scripts/
 │   └── report/
-├── lab2/                   # Lab 2: IPC (planned)
+├── lab2/                   # Lab 2: IPC comparative analysis
+│   ├── CMakeLists.txt
+│   ├── SPEC.md
+│   ├── src/                # ipc_benchmark: mmap, shm, file, pipe, fifo, socket, mqueue
+│   ├── scripts/            # run_benchmarks.py, plot_results.py
+│   └── report/             # REPORT.md + reference CSV
 ├── lab3/                   # Lab 3: Cache (planned)
 └── results/                # Benchmark output (CSV, generated reports)
 ```
@@ -78,6 +83,9 @@ cmake --build build -j
 
 # run lab1
 ./build-docker/lab1/socket_benchmark --all
+
+# run a single lab2 IPC measurement
+./build-docker/lab2/ipc_benchmark -m mmap_file -t throughput -s 4096 -n 50000
 ```
 
 ---
@@ -89,6 +97,13 @@ make bench
 ```
 
 Results land in `./results/` on your host filesystem.
+
+Lab 2 has its own matrix (includes POSIX message queues, Linux-only):
+```bash
+make lab2-bench
+```
+
+Results: `results/lab2_results.csv`; charts: `python3 lab2/scripts/plot_results.py`.
 
 ---
 
@@ -103,9 +118,15 @@ This runs:
 2. `cmake --build build-docker -j` — compiles all lab targets
 3. `./build/lab1/socket_benchmark --all` — runs the lab1 binary
 
+For lab 2 natively (POSIX message queues are skipped on macOS):
+```bash
+make lab2-native
+```
+
 Platform detection happens automatically at configure time:
 - **macOS:** CMake finds `kqueue` → compiles `iomux_kqueue.c`
 - **Linux:** CMake finds `epoll` → compiles `iomux_epoll.c`
+- **Linux only:** CMake finds `mq_open` → enables the `mqueue` IPC method
 
 ---
 

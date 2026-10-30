@@ -1,0 +1,6 @@
+platform: Linux-6.8.0-100-generic-aarch64-with-glibc2.36
+machine: aarch64
+processor: 
+gcc: gcc (Debian 12.2.0-14+deb12u1) 12.2.0
+cmake: cmake version 3.25.1
+runtime: docker
